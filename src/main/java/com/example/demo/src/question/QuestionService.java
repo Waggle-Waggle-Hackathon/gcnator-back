@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static sun.jvm.hotspot.code.CompressedStream.L;
 
@@ -32,13 +33,13 @@ public class QuestionService {
     public QuestionRes sendQuestion(Long userId) {
         List<Answer> userQuestion = answerRepository.findByUserIdAndStatus(userId, Status.A);
         ArrayList<Long> array = new ArrayList<>();
-        for (Answer a : userQuestion){
+        for (Answer a : userQuestion) {
             array.add(a.getQuestion().getId());
             System.out.println("중복 ID" + a.getQuestion().getId());
         }
 
         Long cnt = answerRepository.count();
-        if (cnt < 16) {
+        if (cnt < 3) {
             // 범위 내에서 랜덤 아이디를 가지고 옴
             Long length = questionRepository.count();  // 전체 질문 길이
             Long questionId = null;
@@ -58,7 +59,6 @@ public class QuestionService {
 
             return new QuestionRes(q.getId(), q.getQuestion(), false, userId);
         } else {
-            //todo 질문 중복 처리하기
             System.out.println("------------------------------");
             QuestionRes questionRes = new QuestionRes();
             User user = userRepository.getReferenceById(userId);
@@ -70,7 +70,7 @@ public class QuestionService {
                     .map(UserWeight::getCategory)
                     .collect(Collectors.toList());
 
-            List<Question> selectedQuestions = new ArrayList<>();  // 가중치가 0인 카테고리의 질문 모음
+            List<Question> selectedQuestions = new ArrayList<>();
 
             // 0인 카테고리에 대한 질문 리스트
             for (Category category : zeroWeight) {
@@ -79,40 +79,39 @@ public class QuestionService {
             }
 
             ArrayList<Long> categoryArray = new ArrayList<>();
-            for (Question q : selectedQuestions){
+            for (Question q : selectedQuestions) {
                 categoryArray.add(q.getId());
-                System.out.println(q.getId());
-            }
-
-            Long length = (long) selectedQuestions.size();  // 전체 질문 길이
-            Long questionId = null;
-            while (true) {
-                Random random = new Random();
-                Long idx = Math.abs(random.nextLong() % length) + 1;
-                System.out.println(idx);
-
-                if (!array.contains(idx) && categoryArray.contains(idx)) {
-                    questionId = idx;
-
-                    break;
-                }else {
-                    System.out.println("중복발생");
-                }
             }
 
             if (!selectedQuestions.isEmpty()) {
-                Question selectedQuestion = selectedQuestions.get(Math.toIntExact(questionId));
-                questionRes.setQuestion(selectedQuestion.getQuestion());
+                // 중복되지 않는 인덱스들을 배열로 만듭니다.
+                List<Integer> availableIndices = IntStream.range(0, selectedQuestions.size())
+                        .filter(idx -> !array.contains(selectedQuestions.get(idx).getId()))
+                        .boxed()
+                        .collect(Collectors.toList());
+
+                if (!availableIndices.isEmpty()) {
+                    // 랜덤하게 인덱스를 선택하여 질문을 고릅니다.
+                    Random random = new Random();
+                    int randomIndex = random.nextInt(availableIndices.size());
+                    Question selectedQuestion = selectedQuestions.get(availableIndices.get(randomIndex).intValue());
+
+                    questionRes.setQuestion(selectedQuestion.getQuestion());
+                    questionRes.setUserId(userId);
+                    questionRes.setLastQuestion(false);
+                    questionRes.setQuestionId(selectedQuestion.getId());
+                } else {
+                    questionRes.setQuestion("학교 생활은 만족하십니까?");
+                    questionRes.setUserId(userId);
+                    questionRes.setLastQuestion(true);
+                }
+            } else {
+                questionRes.setQuestion("학교 생활은 만족하십니까?");
                 questionRes.setUserId(userId);
-                questionRes.setLastQuestion(false);
-                questionRes.setQuestionId(selectedQuestion.getId());
-            }else {
-                //todo 현재는 질문 null로 들어가는데 마지막 질문 어떻게 할지?
                 questionRes.setLastQuestion(true);
             }
 
             return questionRes;
         }
-
     }
 }
