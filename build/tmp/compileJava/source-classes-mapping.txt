@@ -57,8 +57,8 @@ com/example/demo/src/user/UserService.java
  com.example.demo.src.user.UserService
 com/example/demo/src/question/AnswerRepository.java
  com.example.demo.src.question.AnswerRepository
-com/example/demo/src/question/AnswerService.java
- com.example.demo.src.question.AnswerService
+com/example/demo/src/question/QuestionService.java
+ com.example.demo.src.question.QuestionService
 com/example/demo/utils/entity/Status.java
  com.example.demo.utils.entity.Status
 com/example/demo/src/user/entity/User.java
@@ -73,5 +73,5 @@ com/example/demo/src/question/entity/UserWeight.java
  com.example.demo.src.question.entity.UserWeight
 com/example/demo/src/question/QuestionController.java
  com.example.demo.src.question.QuestionController
-com/example/demo/src/question/QuestionService.java
- com.example.demo.src.question.QuestionService
+com/example/demo/src/question/AnswerService.java
+ com.example.demo.src.question.AnswerService
