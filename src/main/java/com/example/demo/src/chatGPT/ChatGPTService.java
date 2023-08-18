@@ -12,13 +12,12 @@ import org.springframework.stereotype.Service;
 public class ChatGPTService {
     public final ChatgptService chatGPTInterface;
 
-    public ChatGPTRes getDropout(String question) throws BaseException {
+    public String getDropout(String question) throws BaseException {
         try{
             String response = chatGPTInterface.sendMessage(question);
             System.out.println(response);
 
-
-            return new ChatGPTRes(response);
+            return response;
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
