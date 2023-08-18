@@ -20,4 +20,6 @@ public interface UserWeightRepository extends JpaRepository<UserWeight,Long> {
 
     List<UserWeight> findByUser(User user);
 
+    List<UserWeight> findByUserId(Long userId);
+
 }

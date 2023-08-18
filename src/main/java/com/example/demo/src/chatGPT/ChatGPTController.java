@@ -23,9 +23,9 @@ public class ChatGPTController {
     }
 
     @PostMapping("/dropout")
-    public BaseResponse<ChatGPTRes> getDropout(@RequestParam String question) {
+    public BaseResponse<String> getDropout(@RequestParam String question) {
         try {
-            ChatGPTRes chatGPTRes = chatGPTService.getDropout(question);
+            String chatGPTRes = chatGPTService.getDropout(question);
             return new BaseResponse<>(chatGPTRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
