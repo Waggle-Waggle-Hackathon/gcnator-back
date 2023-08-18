@@ -16,6 +16,8 @@ secret/
 utils/
 *.yml
 .idea
+.gradle/
+
 # AWS User-specific
 .idea/**/aws.xml
 
